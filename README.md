@@ -6,7 +6,7 @@
 
 Econ & DS at Berkeley. I build a lot of AI and trading stuff, and a few of my projects have placed at hackathons.
 
-When I'm not clauding I'm probably fishing, playing poker or talking cars.
+When I'm not prompting I'm probably fishing, playing poker or talking cars.
 
 ### The hand I'm playing
 
