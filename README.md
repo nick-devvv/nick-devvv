@@ -4,7 +4,7 @@
 
 ### Hey, I'm Nick 👋
 
-Econ & DS at Berkeley. I build a lot of AI and trading stuff, and a few of my projects have placed at hackathons.
+I'm studying Econ & DS at Berkeley. Lately I've been building a lot with AI and won a few hackathons along the way.
 
 When I'm not prompting I'm probably fishing, playing poker or talking cars.
 
