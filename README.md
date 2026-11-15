@@ -2,11 +2,11 @@
   <img src="assets/banner.svg" width="100%" alt="Nick Dev, Economics and Data Science at UC Berkeley. A royal flush of spades: fishing, cars, builder of AI and markets projects, 3x hackathon winner, econ and data at UC Berkeley.">
 </p>
 
-### Hey, I'm Nick ♠️
+### Hey, I'm Nick 👋
 
-I study Economics & Data Science at UC Berkeley and like building things where data turns into a decision: a quant paper-trading desk, an AI fact-checker that shows its receipts, a dinner picker for indecisive friends, and agents that run property-tax appeals. Three of them placed at hackathons.
+Econ & DS at Berkeley. I build a lot of AI and trading stuff, and a few of my projects have placed at hackathons.
 
-When I'm not building, I'm fishing, at a poker table, or talking cars.
+When I'm not coding I'm probably fishing, playing poker or talking cars.
 
 ### The hand I'm playing
 
