@@ -233,23 +233,23 @@ def scene_clawback():
 def scene_boneify():
     pal = {'a': '#22170F', 'b': '#5B8C3E', 'c': '#FFFAF2', 'd': '#D9E3A5'}
     out = [f'<g class="bob">{sprite(REX, pal, 70, 126, 9)}</g>']
-    px, py, pw, ph = 420, 62, 260, 252
+    px, py, pw, ph = 420, 98, 260, 222
     out.append(path(f'M{px + 8} {py + 8}h{pw}v{ph}h-{pw}z', '#08321F'))
     out.append(path(f'M{px} {py}h{pw - 32}v8h8v8h8v8h8v8h8v{ph - 32}h-{pw}z', CREAM))
     out.append(path(f'M{px + pw - 32} {py}h8v24h24v8h-32z', CREAM_D))
     css, T = [], 6.0
     lines = [180, 150, 196, 128, 170, 140]
     for i, w in enumerate(lines):
-        y = py + 48 + i * 32
+        y = py + 40 + i * 28
         out.append(path(f'M{px + 24} {y}h{w}v12h-{w}z', '#CFC3A6'))
         ok = i != 3
         mark = sprite(CHECK if ok else CROSS, {'#': '#1F9D55' if ok else RED}, px + pw - 52, y - 8, 4)
         out.append(f'<g class="mk{i}">{mark}</g>')
         css.append(appear_css(f'mk{i}', T, 0.5 + i * 0.7, frm='scale(1.6)').replace(f'.mk{i}{{', f'.mk{i}{{transform-box:fill-box;transform-origin:50% 50%;'))
-    scan = f'M{px + 12} {py + 40}h{pw - 24}v28h-{pw - 24}z'
+    scan = f'M{px + 12} {py + 32}h{pw - 24}v26h-{pw - 24}z'
     out.append(f'<path class="scan" fill="#A8D672" fill-opacity=".28" d="{scan}"/>')
-    steps = ''.join(f'{(0.5 + i * 0.7) / T * 100:.1f}%{{transform:translateY({i * 32}px)}}' for i in range(6))
-    css.append(f'.scan{{animation:scan {T}s steps(1) infinite}}@keyframes scan{{0%{{transform:translateY(0)}}{steps}90%,100%{{opacity:0;transform:translateY(160px)}}}}')
+    steps = ''.join(f'{(0.5 + i * 0.7) / T * 100:.1f}%{{transform:translateY({i * 28}px)}}' for i in range(6))
+    css.append(f'.scan{{animation:scan {T}s steps(1) infinite}}@keyframes scan{{0%{{transform:translateY(0)}}{steps}90%,100%{{opacity:0;transform:translateY(140px)}}}}')
     return ''.join(out), ''.join(css)
 
 
@@ -376,7 +376,7 @@ def shade(hexcol, k=.5):
 PROJECTS = [
     # slug, name, tagline, accent, scene, badge, corner card
     ('clawback', 'CLAWBACK', 'AGENTS CLAW BACK YOUR SLA CREDITS', '#FF6A1F', scene_clawback, ('NEW', 'orange'), ('J', 'C')),
-    ('boneify', 'BONEIFY', 'CHECKS AI ANSWERS AGAINST THE SOURCE', '#A8D672', scene_boneify, ('1ST PLACE', 'gold'), ('A', 'S')),
+    ('boneify', 'BONEIFY', 'CHECKS AI ANSWERS AGAINST THE SOURCE', '#A8D672', scene_boneify, ('1ST ADOBE TRACK * 2ND OVERALL', 'gold'), ('A', 'S')),
     ('picky', 'PICKY', 'EVERYONE AGREES ON FOOD', '#FF5C8A', scene_picky, ('2ND PLACE', 'silver'), ('K', 'H')),
     ('claimos', 'CLAIM OS', 'AGENTS APPEAL YOUR PROPERTY TAXES', '#4FD1C5', scene_claimos, ('4TH PLACE', 'bronze'), ('Q', 'D')),
     ('deltadesk', 'DELTADESK', 'QUANT PAPER-TRADING DESK', '#4EA8FF', scene_deltadesk, None, ('10', 'S')),
@@ -436,7 +436,7 @@ def award(place, title, event, project, accent, metal):
 AWARDS = [
     # file, place number, title, event, project, accent, metal
     ('award-boneify-adobe', '1', '1ST PLACE', 'ADOBE TRACK * DREXATHON 2026', 'BONEIFY', '#A8D672', 'gold'),
-    ('award-boneify-overall', '2', '2ND OVERALL', 'DREXATHON 2026', 'BONEIFY', '#A8D672', 'silver'),
+    ('award-boneify-overall', '2', '2ND PLACE', 'OVERALL * DREXATHON 2026', 'BONEIFY', '#A8D672', 'silver'),
     ('award-picky', '2', '2ND PLACE', 'HACK WITH CLAUDE * UC BERKELEY', 'PICKY', '#FF5C8A', 'silver'),
     ('award-claimos', '4', '4TH PLACE', 'YC x NAIVE HACKATHON * SF', 'CLAIM OS', '#4FD1C5', 'bronze'),
 ]
