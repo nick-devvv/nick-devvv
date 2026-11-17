@@ -39,5 +39,5 @@
 </p>
 
 <p align="center">
-  <a href="https://www.linkedin.com/in/smaran-kudapa/"><img src="assets/btn-smaran.svg" width="220" alt="Inspired by Smaran, my co-founder"></a>
+  <a href="https://github.com/SmaranKudapa"><img src="assets/btn-smaran.svg" width="220" alt="Inspired by Smaran, my co-founder"></a>
 </p>
