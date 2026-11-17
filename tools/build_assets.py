@@ -441,6 +441,20 @@ AWARDS = [
     ('award-claimos', '4', '4TH PLACE', 'YC x NAIVE HACKATHON * SF', 'CLAIM OS', '#4FD1C5', 'bronze'),
 ]
 
+
+
+def btn_credit():
+    """Small credit button: inspired by Smaran, my co-founder."""
+    W, H = 640, 112
+    b = [path(frame(0, 0, W, H), GOLD_DD), path(frame(4, 4, W - 8, H - 12), PANEL_L), path(f'M12 {H - 22}h{W - 24}v8h-{W - 24}z', PANEL)]
+    b.append(f'<g class="bob">{sprite(card("A", "H"), card_pal("H"), 30, 16, 3)}</g>')
+    b.append(text('INSPIRED BY SMARAN', 100, 24, 4, GOLD))
+    b.append(text('MY CO-FOUNDER', 100, 62, 3, CREAM_D))
+    b.append(f'<g class="nudge">{text(">", W - 60, 38, 4, GOLD)}</g>')
+    b.append(f'<clipPath id="bt"><path d="{frame(4, 4, W - 8, H - 12)}"/></clipPath>'
+             f'<g clip-path="url(#bt)"><rect class="shine" x="0" y="0" width="50" height="{H}" fill="#fff" opacity=".12"/></g>')
+    return svg(W, H, ''.join(b), 'Inspired by Smaran, my co-founder')
+
 if __name__ == '__main__':
     OUT.mkdir(exist_ok=True)
     (OUT / 'hero.svg').write_text(hero())
@@ -448,6 +462,7 @@ if __name__ == '__main__':
         (OUT / f'tile-{slug}.svg').write_text(tile(name, tagline, accent, scene, badge, corner))
     (OUT / 'btn-demo.svg').write_text(btn_demo())
     (OUT / 'btn-all.svg').write_text(btn_all())
+    (OUT / 'btn-smaran.svg').write_text(btn_credit())
     (OUT / 'spacer.svg').write_text('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="112" viewBox="0 0 800 112"></svg>\n')
     for f, *a in AWARDS:
         (OUT / f'{f}.svg').write_text(award(*a))
