@@ -9,7 +9,7 @@
 
 <p align="center">
   <a href="https://github.com/nick-devvv/clawback"><img src="assets/tile-clawback.svg" width="32%" alt="Clawback: agents claw back your SLA credits. Founder Square, Agents After Dark. (repo)"></a>
-  <a href="https://github.com/nick-devvv/boneify"><img src="assets/tile-boneify.svg" width="32%" alt="Boneify: checks AI answers against the source. 1st place Adobe track, 2nd overall, Drexathon 2026. (repo)"></a>
+  <a href="https://github.com/nick-devvv/boneify"><img src="assets/tile-boneify.svg" width="32%" alt="Boneify: checks AI answers against the source. 1st place Adobe track and 2nd place overall, Drexathon 2026. (repo)"></a>
   <a href="https://github.com/SmaranKudapa/picky"><img src="assets/tile-picky.svg" width="32%" alt="picky: everyone agrees on food. 2nd place, Hack With Claude. (repo)"></a>
   <br>
   <a href="https://clawback-two.vercel.app"><img src="assets/btn-demo.svg" width="32%" alt="Play the Clawback demo"></a>
@@ -29,7 +29,7 @@
 
 <p align="center">
   <a href="https://github.com/nick-devvv/boneify"><img src="assets/award-boneify-adobe.svg" width="49%" alt="1st place, Adobe track, Drexathon 2026, for Boneify"></a>
-  <a href="https://github.com/nick-devvv/boneify"><img src="assets/award-boneify-overall.svg" width="49%" alt="2nd overall, Drexathon 2026, for Boneify"></a>
+  <a href="https://github.com/nick-devvv/boneify"><img src="assets/award-boneify-overall.svg" width="49%" alt="2nd place overall, Drexathon 2026, for Boneify"></a>
   <a href="https://github.com/SmaranKudapa/picky"><img src="assets/award-picky.svg" width="49%" alt="2nd place, Hack With Claude at UC Berkeley, for picky"></a>
   <a href="https://github.com/SmaranKudapa/claimos"><img src="assets/award-claimos.svg" width="49%" alt="4th place at the YC x Naive Hackathon, for Claim OS"></a>
 </p>
