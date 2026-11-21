@@ -343,6 +343,133 @@ def scene_secondlook():
     return ''.join(out), ''.join(css)
 
 
+WRENCH = ['##...##', '##...##', '###.###', '.#####.', '..###..', '..###..', '..###..', '..###..',
+          '..###..', '..###..', '..###..', '.#####.', '.#####.', '..###..']
+
+
+def scene_plumb():
+    """A copper pipe leaking coins. A wrench clamps each leak in turn and the money stops."""
+    T, py = 6.0, 150
+    cu_l, cu, cu_d, cu_k = '#F2AE7E', '#C8733F', '#8A4622', '#2A150A'
+    out, css = [], []
+
+    def pipe_seg(x, w, y0, y1):
+        return (path(f'M{x} {y0 - 4}h{w}v{y1 - y0 + 8}h-{w}z', cu_k) + path(f'M{x} {y0}h{w}v{y1 - y0}h-{w}z', cu)
+                + path(f'M{x} {y0 + 4}h{w}v8h-{w}z', cu_l) + path(f'M{x} {y1 - 12}h{w}v12h-{w}z', cu_d))
+    out.append(pipe_seg(-8, TW + 16, py, py + 48))
+    for fx in (140, 400, 600):
+        out.append(pipe_seg(fx, 32, py - 12, py + 60))
+        out.append(path(f'M{fx + 12} {py - 4}h8v8h-8z' + f'M{fx + 12} {py + 44}h8v8h-8z', cu_k))
+    cracks = [(300, 1.6), (500, 3.0), (690, 4.4)]
+    pct = lambda t: f'{min(max(t, 0), T) / T * 100:.2f}%'
+    for i, (cx, p) in enumerate(cracks):
+        out.append(path(f'M{cx - 12} {py + 28}h8v4h8v4h8v4h-8v4h-8v4h-8z' + f'M{cx + 12} {py + 24}h4v8h-4z', cu_k))
+        k = 0
+        while k * 0.9 < p - 0.4:
+            s = k * 0.9
+            name = f'dp{i}{k}'
+            out.append(f'<g class="{name}">{chip(cx - 16, py + 50, 3, "gold", cls=None, centre="$")}</g>')
+            css.append(f'.{name}{{opacity:0;animation:{name} {T}s cubic-bezier(.5,0,1,.6) infinite}}'
+                       f'@keyframes {name}{{0%,{pct(s - .01)}{{opacity:0;transform:translateY(0)}}{pct(s)}{{opacity:1;transform:translateY(0)}}'
+                       f'{pct(s + .6)}{{opacity:1;transform:translateY(84px)}}{pct(s + .7)},100%{{opacity:0;transform:translateY(88px)}}}}')
+            k += 1
+        clamp = (path(f'M{cx - 20} {py - 12}h40v72h-40z', GOLD_DD) + path(f'M{cx - 16} {py - 8}h32v64h-32z', GOLD)
+                 + path(f'M{cx - 16} {py - 8}h32v8h-32z', GOLD_L) + path(f'M{cx - 8} {py + 20}h16v8h-16z', GOLD_DD))
+        out.append(f'<g class="cl{i}">{clamp}</g>')
+        css.append(appear_css(f'cl{i}', T, p, 5.6, 'scale(1.5)').replace(f'.cl{i}{{', f'.cl{i}{{transform-box:fill-box;transform-origin:50% 50%;'))
+        out.append(f'<g class="pl{i}">{text("+$", cx - 54, py - 46, 4, GOLD_L, "middle")}</g>')
+        css.append(f'.pl{i}{{opacity:0;animation:pl{i} {T}s ease-out infinite}}'
+                   f'@keyframes pl{i}{{0%,{pct(p)}{{opacity:0;transform:translateY(0)}}{pct(p + .15)}{{opacity:1}}'
+                   f'{pct(p + 1.1)}{{opacity:1;transform:translateY(-18px)}}{pct(p + 1.4)},100%{{opacity:0;transform:translateY(-20px)}}}}')
+    # puddle of coins under the pipe
+    for i, (cx, _) in enumerate(cracks):
+        out.append(chip_stack(2 - i % 2, [CHIP_COLORS['gold']], cx - 34, 318, u=5))
+    # the wrench hops to each leak just before it gets clamped
+    out.append(f'<g class="wr">{sprite(WRENCH, {"#": "#C9CED6"}, 0, py - 82, 5)}</g>')
+    kf = [f'0%,{pct(.6)}{{opacity:0;transform:translateX({cracks[0][0] - 18}px)}}']
+    for i, (cx, p) in enumerate(cracks):
+        kf.append(f'{pct(p - .5)}{{opacity:1;transform:translateX({cx - 18}px) translateY(0)}}'
+                  f'{pct(p - .15)}{{opacity:1;transform:translateX({cx - 18}px) translateY(14px)}}'
+                  f'{pct(p + .1)}{{opacity:1;transform:translateX({cx - 18}px) translateY(0)}}')
+    kf.append(f'{pct(5.0)},100%{{opacity:0;transform:translateX({cracks[-1][0] + 40}px)}}')
+    css.append(f'.wr{{animation:wr {T}s ease-in-out infinite}}@keyframes wr{{{"".join(kf)}}}')
+    return ''.join(out), ''.join(css)
+
+
+def night_bot(color):
+    """The Afterhours crew bot (the team's own design): a hovering gumdrop with a dark visor,
+    one LED bar and an antenna. Keys: b body, d shade, h highlight, v visor, l LED, s antenna, t tip, k outline."""
+    W, H = 18, 19
+    g = [['.'] * W for _ in range(H)]
+    spans = {4: (5, 10), 5: (3, 12), 6: (2, 13), 7: (1, 14)}
+    for y in range(4, 17):
+        a, b = spans.get(y, (0, 15) if y == 15 else (1, 14))
+        for x in range(a, b + 1):
+            g[y + 1][x + 1] = 'd' if (x >= b - 1 or y >= 15) else 'b'
+    for x in range(3, 13):
+        for y in (8, 9, 10):
+            g[y + 1][x + 1] = 'v'
+    for x in range(5, 11):
+        g[10][x + 1] = 'l'
+    for x, y in ((4, 6), (5, 6), (3, 7)):
+        g[y + 1][x + 1] = 'h'
+    for y in (2, 3):
+        g[y + 1][10] = 's'
+    for x in (10, 11):
+        for y in (0, 1):
+            g[y + 1][x] = 't'
+    g = outline(g, 'bdhvlst')
+    return [''.join(r) for r in g]
+
+
+def scene_afterhours():
+    out = [path(f'M0 {i * 56}h{TW}v56h-{TW}z', c) for i, c in
+           enumerate(['#0B0820', '#0F0B29', '#130E33', '#17113D', '#1B1447', '#1F1750'])]
+    css = []
+    rnd = random.Random(5)
+    stars = [(rnd.randrange(20, 760, 4), rnd.randrange(16, 180, 4)) for _ in range(26)]
+    for i, (x, y) in enumerate(stars):
+        out.append(f'<g class="tw st{i % 4}">{path(f"M{x} {y}h4v4h-4z", CREAM if i % 3 else "#39E8FF")}</g>')
+    # moon
+    moon = {(x, y) for y in range(13) for x in range(13) if (x - 6) ** 2 + (y - 6) ** 2 <= 40}
+    bite = {(x, y) for y in range(13) for x in range(13) if (x - 9) ** 2 + (y - 4) ** 2 <= 22}
+    out.append(path(runs(moon - bite, 4, 620, 30), '#FFF3C4'))
+    # skyline with lit windows
+    bldg = [(0, 214, 96), (100, 246, 70), (176, 200, 110), (292, 232, 84), (380, 190, 120), (506, 238, 90), (600, 206, 104), (708, 228, 100)]
+    win_cols = ['#FFC93B', '#8F6BFF', '#FF3BD4', '#39E8FF']
+    for bi, (x, y, w) in enumerate(bldg):
+        out.append(path(f'M{x} {y}h{w}v{SCENE_H - y}h-{w}z', '#120D2C' if bi % 2 else '#160F36'))
+        out.append(path(f'M{x} {y}h{w}v4h-{w}z', '#2A1F5E'))
+        for wy in range(y + 16, SCENE_H - 12, 24):
+            for wx in range(x + 12, x + w - 16, 20):
+                if rnd.random() < 0.45:
+                    col = rnd.choice(win_cols)
+                    cls = f' class="tw st{rnd.randrange(4)}"' if rnd.random() < 0.35 else ''
+                    out.append(f'<g{cls}>{path(f"M{wx} {wy}h8v10h-8z", col)}</g>')
+    # neon OPEN sign
+    out.append(path(frame(510, 262, 84, 34, 4), '#FF3BD4') + path(frame(514, 266, 76, 26, 4), '#1A0A2E'))
+    out.append(f'<g class="blink">{text("OPEN", 552, 272, 2, "#FF3BD4", "middle")}</g>')
+    # the crew: three bots hovering
+    T = 2.4
+    for i, (x, col) in enumerate([(40, '#FF3BD4'), (190, '#39E8FF'), (340, '#FFC93B')]):
+        y = 92
+        pal = {'b': col, 'd': shade(col, .62), 'h': '#FFFFFF', 'v': '#07060F', 'l': '#E9FBFF', 's': '#3A3F55', 't': col, 'k': '#05040C'}
+        ring = ellipse(x + 72, y + 168, 52, 10, y + 158, y + 180)
+        bot = sprite(night_bot(col), pal, x, y, 8)
+        scan = f'<path class="scan{i}" fill="#FFFFFF" d="M{x + 48} {y + 80}h16v8h-16z"/>'
+        out.append(f'<path class="glow" fill="{col}" fill-opacity=".35" d="{ring}"/>')
+        out.append(f'<g class="{"bob" if i % 2 == 0 else "bob2"}">{bot}{scan}</g>')
+        css.append(f'.scan{i}{{animation:scan{i} {T}s ease-in-out infinite;animation-delay:-{i * .5}s}}'
+                   f'@keyframes scan{i}{{0%,100%{{transform:translateX(0)}}50%{{transform:translateX(32px)}}}}')
+    # the owner says yes
+    TT = 5.0
+    b1 = path(frame(494, 112, 262, 48, 4), '#FF3BD4') + path(frame(498, 116, 254, 40, 4), '#1A0A2E') + text('2 FIXES READY', 625, 128, 3, '#FFE3F7', 'middle')
+    b2 = path(frame(600, 176, 136, 48, 4), '#39FF9F') + text('YES 1', 668, 192, 3, '#062414', 'middle')
+    out.append(f'<g class="ms1">{b1}</g><g class="ms2">{b2}</g>')
+    css.append(appear_css('ms1', TT, 0.6, TT * 0.9, 'translateY(16px)') + appear_css('ms2', TT, 1.8, TT * 0.9, 'translateY(16px)'))
+    return ''.join(out), ''.join(css)
+
+
 def tile(name, tagline, accent, scene, badge=None, corner=('A', 'S')):
     body, css = scene()
     W, H = TW, TH
@@ -374,13 +501,15 @@ def shade(hexcol, k=.5):
 
 
 PROJECTS = [
-    # slug, name, tagline, accent, scene, badge, corner card
-    ('clawback', 'CLAWBACK', 'AGENTS CLAW BACK YOUR SLA CREDITS', '#FF6A1F', scene_clawback, ('NEW', 'orange'), ('J', 'C')),
-    ('boneify', 'BONEIFY', 'CHECKS AI ANSWERS AGAINST THE SOURCE', '#A8D672', scene_boneify, ('1ST ADOBE TRACK * 2ND OVERALL', 'gold'), ('A', 'S')),
-    ('picky', 'PICKY', 'EVERYONE AGREES ON FOOD', '#FF5C8A', scene_picky, ('2ND PLACE', 'silver'), ('K', 'H')),
-    ('claimos', 'CLAIM OS', 'AGENTS APPEAL YOUR PROPERTY TAXES', '#4FD1C5', scene_claimos, ('4TH PLACE', 'bronze'), ('Q', 'D')),
-    ('deltadesk', 'DELTADESK', 'QUANT PAPER-TRADING DESK', '#4EA8FF', scene_deltadesk, None, ('10', 'S')),
-    ('secondlook', 'SECOND LOOK', 'REPAIR OR TRADE IN, NOT BUY NEW', '#E5484D', scene_secondlook, None, ('9', 'H')),
+    # slug, name, tagline, accent, scene, badge, corner card (in README order, the corners make a straight, A down to 7)
+    ('plumb', 'PLUMB', 'AGENTS FIND THE MONEY A SHOP IS LOSING', '#F2AE7E', scene_plumb, ('1ST PLACE', 'gold'), ('A', 'S')),
+    ('boneify', 'BONEIFY', 'CHECKS AI ANSWERS AGAINST THE SOURCE', '#A8D672', scene_boneify, ('1ST ADOBE TRACK * 2ND OVERALL', 'gold'), ('K', 'H')),
+    ('afterhours', 'AFTERHOURS', 'A NIGHT CREW OF BOTS FOR SMALL SHOPS', '#FF3BD4', scene_afterhours, ('1ST BEST DESIGN * TOP 4', 'gold'), ('Q', 'D')),
+    ('picky', 'PICKY', 'EVERYONE AGREES ON FOOD', '#FF5C8A', scene_picky, ('2ND PLACE', 'silver'), ('J', 'C')),
+    ('claimos', 'CLAIM OS', 'AGENTS APPEAL YOUR PROPERTY TAXES', '#4FD1C5', scene_claimos, ('4TH PLACE', 'bronze'), ('10', 'S')),
+    ('clawback', 'CLAWBACK', 'AGENTS CLAW BACK YOUR SLA CREDITS', '#FF6A1F', scene_clawback, None, ('9', 'H')),
+    ('deltadesk', 'DELTADESK', 'QUANT PAPER-TRADING DESK', '#4EA8FF', scene_deltadesk, None, ('8', 'D')),
+    ('secondlook', 'SECOND LOOK', 'REPAIR OR TRADE IN, NOT BUY NEW', '#E5484D', scene_secondlook, None, ('7', 'C')),
 ]
 
 
@@ -427,14 +556,19 @@ def award(place, title, event, project, accent, metal):
     inner.append(f'<g class="spin">{sprite(chip_face(11), {"a": CHIP_COLORS[metal][0], "w": CREAM, "d": CHIP_COLORS[metal][1], "b": CHIP_COLORS[metal][0]}, 54, 54, 12)}'
                  f'{text(place, 120, 92, 8, CREAM, "middle")}</g>')
     inner.append(path(text_clip(title, 264, 52, 7), '#000') + text_bands(title, 260, 48, 7, MEDAL[metal]))
-    inner.append(text(event, 262, 124, 3, CREAM_D))
-    inner.append(text(project, 262, 164, 4, accent))
+    lines = [event] if isinstance(event, str) else list(event)
+    y0 = 124 if len(lines) == 1 else 112
+    for k, line in enumerate(lines):
+        inner.append(text(line, 262, y0 + k * 30, 3, CREAM_D))
+    inner.append(text(project, 262, y0 + 30 * len(lines) + 10, 4, accent))
     b.append(f'<g clip-path="url(#a)">{"".join(inner)}</g>')
-    return svg(W, H, ''.join(b), f'{title.title()}, {event.title()}, for {project.title()}')
+    return svg(W, H, ''.join(b), f'{title.title()}, {", ".join(lines).title()}, for {project.title()}')
 
 
 AWARDS = [
-    # file, place number, title, event, project, accent, metal
+    # file, place number, title, event (one line, or a list of two), project, accent, metal
+    ('award-plumb', '1', '1ST PLACE', 'CLAWMAX.AI BUILD NIGHT * SF', 'PLUMB', '#F2AE7E', 'gold'),
+    ('award-afterhours', '1', '1ST PLACE', ['BEST DESIGN * TOP 4 FINALIST', 'GROK BOT HACKATHON'], 'AFTERHOURS', '#FF3BD4', 'gold'),
     ('award-boneify-adobe', '1', '1ST PLACE', 'ADOBE TRACK * DREXATHON 2026', 'BONEIFY', '#A8D672', 'gold'),
     ('award-boneify-overall', '2', '2ND PLACE', 'OVERALL * DREXATHON 2026', 'BONEIFY', '#A8D672', 'silver'),
     ('award-picky', '2', '2ND PLACE', 'HACK WITH CLAUDE * UC BERKELEY', 'PICKY', '#FF5C8A', 'silver'),
