@@ -506,11 +506,8 @@ def shade(hexcol, k=.5):
 
 
 # Add a project here and re-run: its tile, its place in the grid, its corner card (A, K, Q... in order)
-# and its PLAY DEMO bar are all generated, and so is README.md.
+# and its bar are all generated, and so is README.md. Bar: demo= gives PLAY DEMO, video= gives WATCH DEMO, neither gives a dim bar.
 PROJECTS = [
-    dict(slug='plumb', name='PLUMB', tagline='AGENTS FIND THE MONEY A SHOP IS LOSING', accent='#F2AE7E', scene=scene_plumb,
-         badge=('1ST PLACE', 'gold'), repo=None, demo=None,
-         alt='Plumb: agents find the money a shop is losing. 1st place, ClawMax.ai Build Night SF.'),
     dict(slug='afterhours', name='AFTERHOURS', tagline='A NIGHT CREW OF BOTS FOR SMALL SHOPS', accent='#FF3BD4', scene=scene_afterhours,
          badge=('1ST BEST DESIGN * TOP 4', 'gold'), repo='https://github.com/nick-devvv/afterhours',
          demo='https://afterhours-picky9.vercel.app/?demo',
@@ -528,7 +525,7 @@ PROJECTS = [
          badge=None, repo='https://github.com/nick-devvv/clawback', demo='https://clawback-two.vercel.app',
          alt='Clawback: agents claw back your SLA credits. Founder Square, Agents After Dark.'),
     dict(slug='deltadesk', name='DELTADESK', tagline='QUANT PAPER-TRADING DESK', accent='#4EA8FF', scene=scene_deltadesk,
-         badge=None, repo='https://github.com/nick-devvv/deltadesk', demo=None,
+         badge=None, repo='https://github.com/nick-devvv/deltadesk', demo=None, video=None,
          alt='DeltaDesk: a quant paper-trading desk.'),
     dict(slug='secondlook', name='SECOND LOOK', tagline='REPAIR OR TRADE IN, NOT BUY NEW', accent='#E5484D', scene=scene_secondlook,
          badge=None, repo='https://github.com/nick-devvv/second-look', demo='https://second-look-zara.vercel.app',
@@ -549,10 +546,9 @@ AWARDS = [
 
 
 # ===================================================================== buttons and the trophy case
-def btn_demo():
+def btn_demo(label='PLAY DEMO'):
     W, H = 800, 112
     b = [path(frame(0, 0, W, H), '#4A0B13'), path(frame(4, 4, W - 8, H - 12), RED), path(f'M12 {H - 22}h{W - 24}v8h-{W - 24}z', RED_D)]
-    label = 'PLAY DEMO'
     tw = text_width(label, 6)
     x = (W - tw) / 2 + 24
     b.append(f'<g class="nudge">{text(">", x - 64, 31, 6, CREAM)}</g>')
@@ -560,7 +556,7 @@ def btn_demo():
     b.append(chip(36, 34, 4, 'gold') + f'<g style="animation-delay:-.9s">{chip(W - 80, 34, 4, "gold")}</g>')
     b.append(f'<clipPath id="bt"><path d="{frame(4, 4, W - 8, H - 12)}"/></clipPath>'
              f'<g clip-path="url(#bt)"><rect class="shine" x="0" y="0" width="60" height="{H}" fill="#fff" opacity=".22"/></g>')
-    return svg(W, H, ''.join(b), 'Play demo')
+    return svg(W, H, ''.join(b), label.title())
 
 
 
@@ -637,6 +633,8 @@ def readme(trophy_alt):
         for p in row:
             if p['demo']:
                 out.append(f'  <a href="{p["demo"]}"><img src="assets/btn-demo.svg" width="32%" alt="Play the {p["alt"].split(":")[0]} demo"></a>')
+            elif p.get('video'):
+                out.append(f'  <a href="{p["video"]}"><img src="assets/btn-video.svg" width="32%" alt="Watch the {p["alt"].split(":")[0]} demo video"></a>')
             else:
                 out.append('  <img src="assets/btn-none.svg" width="32%" alt="">')
         out += ['</p>', '']
@@ -670,6 +668,7 @@ if __name__ == '__main__':
         corner = (RANKS[i % len(RANKS)], 'SHDC'[i % 4])
         (OUT / f'tile-{p["slug"]}.svg').write_text(tile(p['name'], p['tagline'], p['accent'], p['scene'], p['badge'], corner))
     (OUT / 'btn-demo.svg').write_text(btn_demo())
+    (OUT / 'btn-video.svg').write_text(btn_demo('WATCH DEMO'))
     (OUT / 'btn-none.svg').write_text(btn_none())
     (OUT / 'btn-all.svg').write_text(btn_all())
     (OUT / 'btn-smaran.svg').write_text(btn_credit())
