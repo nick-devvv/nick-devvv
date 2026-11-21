@@ -470,7 +470,7 @@ def scene_afterhours():
     return ''.join(out), ''.join(css)
 
 
-def tile(name, tagline, accent, scene, badge=None, corner=('A', 'S')):
+def tile(name, tagline, accent, scene, badge=None, corner=('A', 'S'), cta=None):
     body, css = scene()
     W, H = TW, TH
     felt = ''.join(f'M0 {y}h{W}v{SCENE_H // 6}h-{W}z' for y in range(0, SCENE_H, SCENE_H // 6))
@@ -487,6 +487,11 @@ def tile(name, tagline, accent, scene, badge=None, corner=('A', 'S')):
         bw = 72 + text_width(label, 3) + 18
         inner += (path(frame(20, 20, bw, 60, 4), '#000000" fill-opacity=".55') + chip(28, 28, 4, color)
                   + text(label, 84, 39, 3, CREAM))
+    if cta:
+        cw = text_width(cta, 3) + 74
+        cx = W - 36 - cw
+        inner += (path(frame(cx, 360, cw, 48, 4), '#4A0B13') + path(frame(cx + 2, 360, cw - 4, 42, 4), RED)
+                  + f'<g class="nudge">{text(">", cx + 18, 374, 3, CREAM)}</g>' + text(cta, cx + 46, 374, 3, CREAM))
     r, s = corner
     inner += f'<g class="bob2">{sprite(card(r, s), card_pal(s), W - 45 - 24, 22, 3)}</g>'
     full = (f'<path fill="{shade(accent, .45)}" d="{frame(0, 0, W, H)}"/><clipPath id="t"><path d="{frame(4, 4, W - 8, H - 8)}"/></clipPath>'
@@ -501,34 +506,20 @@ def shade(hexcol, k=.5):
 
 
 PROJECTS = [
-    # slug, name, tagline, accent, scene, badge, corner card (in README order, the corners make a straight, A down to 7)
-    ('plumb', 'PLUMB', 'AGENTS FIND THE MONEY A SHOP IS LOSING', '#F2AE7E', scene_plumb, ('1ST PLACE', 'gold'), ('A', 'S')),
-    ('boneify', 'BONEIFY', 'CHECKS AI ANSWERS AGAINST THE SOURCE', '#A8D672', scene_boneify, ('1ST ADOBE TRACK * 2ND OVERALL', 'gold'), ('K', 'H')),
-    ('afterhours', 'AFTERHOURS', 'A NIGHT CREW OF BOTS FOR SMALL SHOPS', '#FF3BD4', scene_afterhours, ('1ST BEST DESIGN * TOP 4', 'gold'), ('Q', 'D')),
-    ('picky', 'PICKY', 'EVERYONE AGREES ON FOOD', '#FF5C8A', scene_picky, ('2ND PLACE', 'silver'), ('J', 'C')),
-    ('claimos', 'CLAIM OS', 'AGENTS APPEAL YOUR PROPERTY TAXES', '#4FD1C5', scene_claimos, ('4TH PLACE', 'bronze'), ('10', 'S')),
-    ('clawback', 'CLAWBACK', 'AGENTS CLAW BACK YOUR SLA CREDITS', '#FF6A1F', scene_clawback, None, ('9', 'H')),
-    ('deltadesk', 'DELTADESK', 'QUANT PAPER-TRADING DESK', '#4EA8FF', scene_deltadesk, None, ('8', 'D')),
-    ('secondlook', 'SECOND LOOK', 'REPAIR OR TRADE IN, NOT BUY NEW', '#E5484D', scene_secondlook, None, ('7', 'C')),
+    # slug, name, tagline, accent, scene, badge, corner card, tag (README order, 2 per row; corners run A down to 7)
+    ('plumb', 'PLUMB', 'AGENTS FIND THE MONEY A SHOP IS LOSING', '#F2AE7E', scene_plumb, ('1ST PLACE', 'gold'), ('A', 'S'), None),
+    ('afterhours', 'AFTERHOURS', 'A NIGHT CREW OF BOTS FOR SMALL SHOPS', '#FF3BD4', scene_afterhours, ('1ST BEST DESIGN * TOP 4', 'gold'), ('K', 'H'), 'PLAY'),
+    ('boneify', 'BONEIFY', 'CHECKS AI ANSWERS AGAINST THE SOURCE', '#A8D672', scene_boneify, ('1ST ADOBE TRACK * 2ND OVERALL', 'gold'), ('Q', 'D'), 'PLAY'),
+    ('picky', 'PICKY', 'EVERYONE AGREES ON FOOD', '#FF5C8A', scene_picky, ('2ND PLACE', 'silver'), ('J', 'C'), 'PLAY'),
+    ('claimos', 'CLAIM OS', 'AGENTS APPEAL YOUR PROPERTY TAXES', '#4FD1C5', scene_claimos, ('4TH PLACE', 'bronze'), ('10', 'S'), 'PLAY'),
+    ('clawback', 'CLAWBACK', 'AGENTS CLAW BACK YOUR SLA CREDITS', '#FF6A1F', scene_clawback, None, ('9', 'H'), 'PLAY'),
+    ('deltadesk', 'DELTADESK', 'QUANT PAPER-TRADING DESK', '#4EA8FF', scene_deltadesk, None, ('8', 'D'), 'CODE'),
+    ('secondlook', 'SECOND LOOK', 'REPAIR OR TRADE IN, NOT BUY NEW', '#E5484D', scene_secondlook, None, ('7', 'C'), 'PLAY'),
 ]
 
 
 
 # ===================================================================== buttons and awards
-def btn_demo():
-    W, H = 800, 112
-    b = [path(frame(0, 0, W, H), '#4A0B13'), path(frame(4, 4, W - 8, H - 12), RED), path(f'M12 {H - 22}h{W - 24}v8h-{W - 24}z', RED_D)]
-    label = 'PLAY DEMO'
-    tw = text_width(label, 6)
-    x = (W - tw) / 2 + 24
-    b.append(f'<g class="nudge">{text(">", x - 64, 31, 6, CREAM)}</g>')
-    b.append(path(text_clip(label, x + 4, 35, 6), RED_D) + text(label, x, 31, 6, CREAM))
-    b.append(chip(36, 34, 4, 'gold') + f'<g style="animation-delay:-.9s">{chip(W - 80, 34, 4, "gold")}</g>')
-    b.append(f'<clipPath id="bt"><path d="{frame(4, 4, W - 8, H - 12)}"/></clipPath>'
-             f'<g clip-path="url(#bt)"><rect class="shine" x="0" y="0" width="60" height="{H}" fill="#fff" opacity=".22"/></g>')
-    return svg(W, H, ''.join(b), 'Play demo')
-
-
 def btn_all():
     W, H = 560, 112
     b = [path(frame(0, 0, W, H), GOLD_DD), path(frame(4, 4, W - 8, H - 12), GOLD), path(f'M12 {H - 22}h{W - 24}v8h-{W - 24}z', GOLD_D)]
@@ -592,12 +583,10 @@ def btn_credit():
 if __name__ == '__main__':
     OUT.mkdir(exist_ok=True)
     (OUT / 'hero.svg').write_text(hero())
-    for slug, name, tagline, accent, scene, badge, corner in PROJECTS:
-        (OUT / f'tile-{slug}.svg').write_text(tile(name, tagline, accent, scene, badge, corner))
-    (OUT / 'btn-demo.svg').write_text(btn_demo())
+    for slug, name, tagline, accent, scene, badge, corner, cta in PROJECTS:
+        (OUT / f'tile-{slug}.svg').write_text(tile(name, tagline, accent, scene, badge, corner, cta))
     (OUT / 'btn-all.svg').write_text(btn_all())
     (OUT / 'btn-smaran.svg').write_text(btn_credit())
-    (OUT / 'spacer.svg').write_text('<svg xmlns="http://www.w3.org/2000/svg" width="800" height="112" viewBox="0 0 800 112"></svg>\n')
     for f, *a in AWARDS:
         (OUT / f'{f}.svg').write_text(award(*a))
     for f in sorted(OUT.glob('*.svg')):
