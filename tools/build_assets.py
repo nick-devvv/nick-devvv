@@ -505,21 +505,74 @@ def shade(hexcol, k=.5):
     return '#%02X%02X%02X' % (int(r * k), int(g * k), int(b * k))
 
 
+# Add a project here and re-run: its tile, its place in the grid, its corner card (A, K, Q... in order)
+# and its PLAY DEMO bar are all generated, and so is README.md.
 PROJECTS = [
-    # slug, name, tagline, accent, scene, badge, corner card, tag (README order, 2 per row; corners run A down to 7)
-    ('plumb', 'PLUMB', 'AGENTS FIND THE MONEY A SHOP IS LOSING', '#F2AE7E', scene_plumb, ('1ST PLACE', 'gold'), ('A', 'S'), None),
-    ('afterhours', 'AFTERHOURS', 'A NIGHT CREW OF BOTS FOR SMALL SHOPS', '#FF3BD4', scene_afterhours, ('1ST BEST DESIGN * TOP 4', 'gold'), ('K', 'H'), 'PLAY'),
-    ('boneify', 'BONEIFY', 'CHECKS AI ANSWERS AGAINST THE SOURCE', '#A8D672', scene_boneify, ('1ST ADOBE TRACK * 2ND OVERALL', 'gold'), ('Q', 'D'), 'PLAY'),
-    ('picky', 'PICKY', 'EVERYONE AGREES ON FOOD', '#FF5C8A', scene_picky, ('2ND PLACE', 'silver'), ('J', 'C'), 'PLAY'),
-    ('claimos', 'CLAIM OS', 'AGENTS APPEAL YOUR PROPERTY TAXES', '#4FD1C5', scene_claimos, ('4TH PLACE', 'bronze'), ('10', 'S'), 'PLAY'),
-    ('clawback', 'CLAWBACK', 'AGENTS CLAW BACK YOUR SLA CREDITS', '#FF6A1F', scene_clawback, None, ('9', 'H'), 'PLAY'),
-    ('deltadesk', 'DELTADESK', 'QUANT PAPER-TRADING DESK', '#4EA8FF', scene_deltadesk, None, ('8', 'D'), 'CODE'),
-    ('secondlook', 'SECOND LOOK', 'REPAIR OR TRADE IN, NOT BUY NEW', '#E5484D', scene_secondlook, None, ('7', 'C'), 'PLAY'),
+    dict(slug='plumb', name='PLUMB', tagline='AGENTS FIND THE MONEY A SHOP IS LOSING', accent='#F2AE7E', scene=scene_plumb,
+         badge=('1ST PLACE', 'gold'), repo=None, demo=None,
+         alt='Plumb: agents find the money a shop is losing. 1st place, ClawMax.ai Build Night SF.'),
+    dict(slug='afterhours', name='AFTERHOURS', tagline='A NIGHT CREW OF BOTS FOR SMALL SHOPS', accent='#FF3BD4', scene=scene_afterhours,
+         badge=('1ST BEST DESIGN * TOP 4', 'gold'), repo='https://github.com/nick-devvv/afterhours',
+         demo='https://afterhours-picky9.vercel.app/?demo',
+         alt='Afterhours: a night crew of bots for small shops. 1st place Best Design track and top 4 finalist, Berkeley x Stanford Grok Bot Hackathon.'),
+    dict(slug='boneify', name='BONEIFY', tagline='CHECKS AI ANSWERS AGAINST THE SOURCE', accent='#A8D672', scene=scene_boneify,
+         badge=('1ST ADOBE TRACK * 2ND OVERALL', 'gold'), repo='https://github.com/nick-devvv/boneify', demo='https://boneify.vercel.app',
+         alt='Boneify: checks AI answers against the source. 1st place Adobe track and 2nd place overall, Drexathon 2026.'),
+    dict(slug='picky', name='PICKY', tagline='EVERYONE AGREES ON FOOD', accent='#FF5C8A', scene=scene_picky,
+         badge=('2ND PLACE', 'silver'), repo='https://github.com/SmaranKudapa/picky', demo='https://picky-ten-flax.vercel.app',
+         alt='picky: everyone agrees on food. 2nd place, Hack With Claude.'),
+    dict(slug='claimos', name='CLAIM OS', tagline='AGENTS APPEAL YOUR PROPERTY TAXES', accent='#4FD1C5', scene=scene_claimos,
+         badge=('4TH PLACE', 'bronze'), repo='https://github.com/SmaranKudapa/claimos', demo='https://claimos-site-mds8vwd4myby.vercel.app',
+         alt='Claim OS: agents appeal your property taxes. 4th place, YC x Naive Hackathon.'),
+    dict(slug='clawback', name='CLAWBACK', tagline='AGENTS CLAW BACK YOUR SLA CREDITS', accent='#FF6A1F', scene=scene_clawback,
+         badge=None, repo='https://github.com/nick-devvv/clawback', demo='https://clawback-two.vercel.app',
+         alt='Clawback: agents claw back your SLA credits. Founder Square, Agents After Dark.'),
+    dict(slug='deltadesk', name='DELTADESK', tagline='QUANT PAPER-TRADING DESK', accent='#4EA8FF', scene=scene_deltadesk,
+         badge=None, repo='https://github.com/nick-devvv/deltadesk', demo=None,
+         alt='DeltaDesk: a quant paper-trading desk.'),
+    dict(slug='secondlook', name='SECOND LOOK', tagline='REPAIR OR TRADE IN, NOT BUY NEW', accent='#E5484D', scene=scene_secondlook,
+         badge=None, repo='https://github.com/nick-devvv/second-look', demo='https://second-look-zara.vercel.app',
+         alt='Second Look: repair or trade in, not buy new. BIC x ZARA Case Competition.'),
+]
+RANKS = ['A', 'K', 'Q', 'J', '10', '9', '8', '7', '6', '5', '4', '3', '2']
+
+# Every win, best first. They all go in one trophy case image, two per row.
+AWARDS = [
+    # place number, title, event, project line, accent, metal
+    ('1', '1ST PLACE', 'CLAWMAX.AI BUILD NIGHT * SF', 'PLUMB', '#F2AE7E', 'gold'),
+    ('1', '1ST PLACE', 'BEST DESIGN * GROK BOT HACKATHON', 'AFTERHOURS * TOP 4 FINALIST', '#FF3BD4', 'gold'),
+    ('1', '1ST PLACE', 'ADOBE TRACK * DREXATHON 2026', 'BONEIFY', '#A8D672', 'gold'),
+    ('2', '2ND PLACE', 'OVERALL * DREXATHON 2026', 'BONEIFY', '#A8D672', 'silver'),
+    ('2', '2ND PLACE', 'HACK WITH CLAUDE * UC BERKELEY', 'PICKY', '#FF5C8A', 'silver'),
+    ('4', '4TH PLACE', 'YC x NAIVE HACKATHON * SF', 'CLAIM OS', '#4FD1C5', 'bronze'),
 ]
 
 
+# ===================================================================== buttons and the trophy case
+def btn_demo():
+    W, H = 800, 112
+    b = [path(frame(0, 0, W, H), '#4A0B13'), path(frame(4, 4, W - 8, H - 12), RED), path(f'M12 {H - 22}h{W - 24}v8h-{W - 24}z', RED_D)]
+    label = 'PLAY DEMO'
+    tw = text_width(label, 6)
+    x = (W - tw) / 2 + 24
+    b.append(f'<g class="nudge">{text(">", x - 64, 31, 6, CREAM)}</g>')
+    b.append(path(text_clip(label, x + 4, 35, 6), RED_D) + text(label, x, 31, 6, CREAM))
+    b.append(chip(36, 34, 4, 'gold') + f'<g style="animation-delay:-.9s">{chip(W - 80, 34, 4, "gold")}</g>')
+    b.append(f'<clipPath id="bt"><path d="{frame(4, 4, W - 8, H - 12)}"/></clipPath>'
+             f'<g clip-path="url(#bt)"><rect class="shine" x="0" y="0" width="60" height="{H}" fill="#fff" opacity=".22"/></g>')
+    return svg(W, H, ''.join(b), 'Play demo')
 
-# ===================================================================== buttons and awards
+
+
+
+def btn_none():
+    """A dim, unclickable bar under a project with no public demo, so the grid stays even."""
+    W, H = 800, 112
+    b = [path(frame(0, 0, W, H), '#0E1512'), path(frame(4, 4, W - 8, H - 12), '#141D19'),
+         path(f'M12 {H - 22}h{W - 24}v8h-{W - 24}z', '#0F1714')]
+    return svg(W, H, ''.join(b), '')
+
+
 def btn_all():
     W, H = 560, 112
     b = [path(frame(0, 0, W, H), GOLD_DD), path(frame(4, 4, W - 8, H - 12), GOLD), path(f'M12 {H - 22}h{W - 24}v8h-{W - 24}z', GOLD_D)]
@@ -538,34 +591,61 @@ MEDAL = {'gold': [(0, 1, GOLD_L), (2, 4, GOLD), (5, 6, GOLD_D)],
          'bronze': [(0, 1, '#F6C9A0'), (2, 4, '#D08A4E'), (5, 6, '#9A5E2E')]}
 
 
-def award(place, title, event, project, accent, metal):
-    W, H = 800, 240
-    b = [path(frame(0, 0, W, H), shade(MEDAL[metal][2][2], .8)), f'<clipPath id="a"><path d="{frame(4, 4, W - 8, H - 8)}"/></clipPath>']
+def trophies():
+    """Every award in one compact case: a spinning medal chip, the place, the event and the project, two per row."""
+    W, HEAD, ROW = 1600, 92, 128
+    rows = (len(AWARDS) + 1) // 2
+    H = HEAD + rows * ROW + 20
     inner = [path(f'M0 0h{W}v{H}h-{W}z', PANEL)]
-    inner.append(path(ellipse(120, 120, 120, 120, 0, H), '#0E2A1D'))
-    inner.append(suit_stars(9, W, H, [(0, 0, 250, H), (230, 30, 790, 200)], len(title), u=3))
-    inner.append(f'<g class="spin">{sprite(chip_face(11), {"a": CHIP_COLORS[metal][0], "w": CREAM, "d": CHIP_COLORS[metal][1], "b": CHIP_COLORS[metal][0]}, 54, 54, 12)}'
-                 f'{text(place, 120, 92, 8, CREAM, "middle")}</g>')
-    inner.append(path(text_clip(title, 264, 52, 7), '#000') + text_bands(title, 260, 48, 7, MEDAL[metal]))
-    lines = [event] if isinstance(event, str) else list(event)
-    y0 = 124 if len(lines) == 1 else 112
-    for k, line in enumerate(lines):
-        inner.append(text(line, 262, y0 + k * 30, 3, CREAM_D))
-    inner.append(text(project, 262, y0 + 30 * len(lines) + 10, 4, accent))
-    b.append(f'<g clip-path="url(#a)">{"".join(inner)}</g>')
-    return svg(W, H, ''.join(b), f'{title.title()}, {", ".join(lines).title()}, for {project.title()}')
+    inner.append(suit_stars(14, W, HEAD, [(420, 0, 1180, HEAD)], 21, u=3))
+    label = 'HACKATHON WINS'
+    inner.append(path(text_clip(label, W / 2 + 4, 26, 6, 'middle'), '#000') + text_bands(label, W / 2, 22, 6, MEDAL['gold'], 'middle'))
+    dash = lambda y: path(''.join(f'M{x} {y}h8v4h-8z' for x in range(40, W - 40, 16)), GOLD_DD)
+    inner.append(dash(HEAD - 8))
+    for i, (place, title, event, project, accent, metal) in enumerate(AWARDS):
+        col, row = i % 2, i // 2
+        x0, y0 = col * (W // 2), HEAD + row * ROW
+        if row:
+            inner.append(path(''.join(f'M{x} {y0 - 4}h8v4h-8z' for x in range(x0 + 40, x0 + W // 2 - 40, 16)), '#1E2B24'))
+        base, dark = CHIP_COLORS[metal]
+        medal = sprite(chip_face(11), {'a': base, 'w': CREAM, 'd': dark, 'b': base}, x0 + 40, y0 + 18, 8)
+        inner.append(f'<g class="spin" style="animation-delay:-{i * .3:.1f}s">{medal}{text(place, x0 + 84, y0 + 45, 5, CREAM, "middle")}</g>')
+        inner.append(path(text_clip(title, x0 + 155, y0 + 21, 5), '#000') + text_bands(title, x0 + 152, y0 + 18, 5, MEDAL[metal]))
+        inner.append(text(event, x0 + 154, y0 + 62, 3, CREAM_D))
+        inner.append(text(project, x0 + 154, y0 + 96, 3, accent))
+    inner.append(path(''.join(f'M{W // 2 - 2} {y}h4v8h-4z' for y in range(HEAD + 8, H - 24, 16)), '#1E2B24'))
+    body = (f'<path fill="{GOLD_DD}" d="{frame(0, 0, W, H)}"/><clipPath id="tc"><path d="{frame(4, 4, W - 8, H - 8)}"/></clipPath>'
+            f'<g clip-path="url(#tc)">{"".join(inner)}</g>')
+    alt = 'Hackathon wins: ' + '; '.join(f'{t.title()}, {e.replace(" * ", ", ").title()}, {p.replace(" * ", ", ").title()}' for _, t, e, p, _, _ in AWARDS)
+    return svg(W, H, body, alt), alt
 
 
-AWARDS = [
-    # file, place number, title, event (one line, or a list of two), project, accent, metal
-    ('award-plumb', '1', '1ST PLACE', 'CLAWMAX.AI BUILD NIGHT * SF', 'PLUMB', '#F2AE7E', 'gold'),
-    ('award-afterhours', '1', '1ST PLACE', ['BEST DESIGN * TOP 4 FINALIST', 'GROK BOT HACKATHON'], 'AFTERHOURS', '#FF3BD4', 'gold'),
-    ('award-boneify-adobe', '1', '1ST PLACE', 'ADOBE TRACK * DREXATHON 2026', 'BONEIFY', '#A8D672', 'gold'),
-    ('award-boneify-overall', '2', '2ND PLACE', 'OVERALL * DREXATHON 2026', 'BONEIFY', '#A8D672', 'silver'),
-    ('award-picky', '2', '2ND PLACE', 'HACK WITH CLAUDE * UC BERKELEY', 'PICKY', '#FF5C8A', 'silver'),
-    ('award-claimos', '4', '4TH PLACE', 'YC x NAIVE HACKATHON * SF', 'CLAIM OS', '#4FD1C5', 'bronze'),
-]
-
+def readme(trophy_alt):
+    """README.md: the hero, project tiles 3 per row (tile = code, bar = demo), the trophy case, then the buttons."""
+    out = ['<!--', '  Generated by tools/build_assets.py, like every image in assets/. Edit PROJECTS or AWARDS there and re-run:',
+           '  python3 tools/build_assets.py', '-->', '',
+           '<p align="center">',
+           '  <img src="assets/hero.svg" width="830" alt="NICK DEV. Econ + Data Science at UC Berkeley. A royal flush of spades is dealt on a poker table.">',
+           '</p>', '']
+    for r in range(0, len(PROJECTS), 3):
+        row = PROJECTS[r:r + 3]
+        out.append('<p align="center">')
+        for p in row:
+            img = f'<img src="assets/tile-{p["slug"]}.svg" width="32%" alt="{p["alt"]}{" (code)" if p["repo"] else ""}">'
+            out.append(f'  <a href="{p["repo"]}">{img}</a>' if p['repo'] else f'  {img}')
+        out.append('  <br>')
+        for p in row:
+            if p['demo']:
+                out.append(f'  <a href="{p["demo"]}"><img src="assets/btn-demo.svg" width="32%" alt="Play the {p["alt"].split(":")[0]} demo"></a>')
+            else:
+                out.append('  <img src="assets/btn-none.svg" width="32%" alt="">')
+        out += ['</p>', '']
+    out += ['<p align="center">', f'  <img src="assets/trophies.svg" width="830" alt="{trophy_alt}">', '</p>', '',
+            '<p align="center">', '  <a href="https://github.com/nick-devvv?tab=repositories"><img src="assets/btn-all.svg" width="280" alt="All projects"></a>',
+            '</p>', '', '<p align="center">',
+            '  <a href="https://github.com/SmaranKudapa"><img src="assets/btn-smaran.svg" width="220" alt="Inspired by Smaran, my co-founder"></a>',
+            '</p>', '']
+    return '\n'.join(out)
 
 
 def btn_credit():
@@ -580,14 +660,21 @@ def btn_credit():
              f'<g clip-path="url(#bt)"><rect class="shine" x="0" y="0" width="50" height="{H}" fill="#fff" opacity=".12"/></g>')
     return svg(W, H, ''.join(b), 'Inspired by Smaran, my co-founder')
 
+
 if __name__ == '__main__':
     OUT.mkdir(exist_ok=True)
+    for old in OUT.glob('*.svg'):
+        old.unlink()
     (OUT / 'hero.svg').write_text(hero())
-    for slug, name, tagline, accent, scene, badge, corner, cta in PROJECTS:
-        (OUT / f'tile-{slug}.svg').write_text(tile(name, tagline, accent, scene, badge, corner, cta))
+    for i, p in enumerate(PROJECTS):
+        corner = (RANKS[i % len(RANKS)], 'SHDC'[i % 4])
+        (OUT / f'tile-{p["slug"]}.svg').write_text(tile(p['name'], p['tagline'], p['accent'], p['scene'], p['badge'], corner))
+    (OUT / 'btn-demo.svg').write_text(btn_demo())
+    (OUT / 'btn-none.svg').write_text(btn_none())
     (OUT / 'btn-all.svg').write_text(btn_all())
     (OUT / 'btn-smaran.svg').write_text(btn_credit())
-    for f, *a in AWARDS:
-        (OUT / f'{f}.svg').write_text(award(*a))
+    svg_text, trophy_alt = trophies()
+    (OUT / 'trophies.svg').write_text(svg_text)
+    (OUT.parent / 'README.md').write_text(readme(trophy_alt))
     for f in sorted(OUT.glob('*.svg')):
         print(f'{f.name:28s} {f.stat().st_size // 1024:4d} KB')
