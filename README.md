@@ -24,7 +24,7 @@
   <br>
   <a href="https://claimos-site-mds8vwd4myby.vercel.app"><img src="assets/btn-demo.svg" width="32%" alt="Play the Claim OS demo"></a>
   <a href="https://clawback-two.vercel.app"><img src="assets/btn-demo.svg" width="32%" alt="Play the Clawback demo"></a>
-  <img src="assets/btn-none.svg" width="32%" alt="">
+  <a href="https://youtu.be/fjinN5oafy8"><img src="assets/btn-video.svg" width="32%" alt="Watch the DeltaDesk demo video"></a>
 </p>
 
 <p align="center">

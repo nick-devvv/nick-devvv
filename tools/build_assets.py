@@ -525,7 +525,7 @@ PROJECTS = [
          badge=None, repo='https://github.com/nick-devvv/clawback', demo='https://clawback-two.vercel.app',
          alt='Clawback: agents claw back your SLA credits. Founder Square, Agents After Dark.'),
     dict(slug='deltadesk', name='DELTADESK', tagline='QUANT PAPER-TRADING DESK', accent='#4EA8FF', scene=scene_deltadesk,
-         badge=None, repo='https://github.com/nick-devvv/deltadesk', demo=None, video=None,
+         badge=None, repo='https://github.com/nick-devvv/deltadesk', demo=None, video='https://youtu.be/fjinN5oafy8',
          alt='DeltaDesk: a quant paper-trading desk.'),
     dict(slug='secondlook', name='SECOND LOOK', tagline='REPAIR OR TRADE IN, NOT BUY NEW', accent='#E5484D', scene=scene_secondlook,
          badge=None, repo='https://github.com/nick-devvv/second-look', demo='https://second-look-zara.vercel.app',
