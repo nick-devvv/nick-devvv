@@ -470,6 +470,64 @@ def scene_afterhours():
     return ''.join(out), ''.join(css)
 
 
+FLASK = ['......kkkkkkkk.......', '......kcCCCCbk.....L.', '......kkkkkkkk....LlL', '.......kwxxyk......L.',
+         '.......kwxxyk........', '.......kwxzyk........', '......kwxxxxyk.......', '.....kwxxzxxxyk......',
+         '....kwxxxxxxxxyk.....', '...kllllllllllllk....', '..kwLLLLLLLLLLLLpk...', '..kwLLLLLLLLLLLLpk...',
+         '.kwLLwkLLLLLLwkLLpk..', '.kwLLkkLLLLLLkkLLpk..', '.kLLqqLLLLLLLLqqLpk..', '.kLLLLLLkLLkLLLLLpk..',
+         '.kLLLLLLLkkLLLLLLpk..', '.kpLLLLLLLLLLLLLppk..', '..kppppppppppppppk...', '...kkkkkkkkkkkkkk....']
+MAG = ['..####...', '.#....#..', '#......#.', '#......#.', '#......#.', '#......#.', '.#....#..', '..####...',
+       '......##.', '.......##']
+
+
+def scene_labrotation():
+    """The Lab Rotation flask (the team's own mascot) watches a magnifier sweep a data table until it catches the trap row."""
+    pal = {'k': '#1B1F3A', 'c': '#C18E60', 'C': '#A8744A', 'b': '#7A5136', 'L': '#FFC95C', 'l': '#FFE3A3',
+           'w': '#FFFFFF', 'x': '#EEF2FA', 'y': '#C6CFE6', 'z': '#FFDB8A', 'p': '#E0A93A', 'q': '#F39BBF'}
+    out = [f'<g class="bob">{sprite(FLASK, pal, 50, 104, 10)}</g>']
+    css, T = [], 6.0
+    for i, (bx, d) in enumerate([(120, 0), (150, .9), (176, 1.8)]):
+        out.append(f'<g class="bu bu{i}">{path(f"M{bx} 84h8v8h-8z", "#FFE3A3")}</g>')
+    css.append(ht_css('bu', 2.7, 0, 46) + '.bu1{animation-delay:.9s}.bu2{animation-delay:1.8s}')
+    # the data table
+    px, py, pw = 330, 96, 420
+    rows, rh, top = 5, 32, py + 44
+    ph = 36 + rows * rh
+    out.append(path(f'M{px + 8} {py + 8}h{pw}v{ph}h-{pw}z', '#08321F'))
+    out.append(path(f'M{px} {py}h{pw}v{ph}h-{pw}z', '#EEF2FA'))
+    out.append(path(f'M{px} {py}h{pw}v36h-{pw}z', '#1B1F3A'))
+    cols = [px + 20, px + 84, px + 280]
+    for x, label in zip(cols, ['ID', 'REGION', 'SPEND']):
+        out.append(text(label, x, py + 11, 2, '#FFC95C'))
+    out.append(path(''.join(f'M{px} {top + i * rh - 8}h{pw}v2h-{pw}z' for i in range(1, rows)), '#C6CFE6'))
+    out.append(path(f'M{cols[1] - 16} {py + 36}h2v{ph - 36}h-2zM{cols[2] - 16} {py + 36}h2v{ph - 36}h-2z', '#C6CFE6'))
+    spend = ['42', '38', '4630', '51', '47']
+    trap = 2
+    for i in range(rows):
+        y = top + i * rh
+        out.append(text(str(i + 1), cols[0], y, 2, '#1B1F3A'))
+        out.append(path(f'M{cols[1]} {y + 2}h{[120, 96, 140, 108, 84][i]}v10h-{[120, 96, 140, 108, 84][i]}z', '#B4BCDB'))
+        if i != trap:
+            out.append(text(spend[i], cols[2], y, 2, '#1B1F3A'))
+    ty = top + trap * rh
+    out.append(text(spend[trap], cols[2], ty, 2, '#1B1F3A'))
+    t_hit = 0.4 + trap * 0.55
+    hit = path(f'M{cols[2] - 14} {ty - 6}h{px + pw - cols[2] + 14}v{rh - 2}h-{px + pw - cols[2] + 14}z', RED) + text(spend[trap], cols[2], ty, 2, CREAM)
+    out.append(f'<g class="hit">{hit}</g>')
+    css.append(appear_css('hit', T, t_hit, T * 0.9, 'none'))
+    # the sweep: a highlight band and a magnifier step down the SPEND column, stopping on the trap row
+    out.append(f'<path class="sw" fill="#9B6CF2" fill-opacity=".22" d="M{px} {top - 6}h{pw}v{rh - 2}h-{pw}z"/>')
+    steps = ''.join(f'{(0.4 + i * 0.55) / T * 100:.1f}%{{transform:translateY({i * rh}px)}}' for i in range(trap + 1))
+    css.append(f'.sw{{animation:sw {T}s steps(1) infinite}}@keyframes sw{{0%{{transform:translateY(0)}}{steps}90%,100%{{opacity:0;transform:translateY({trap * rh}px)}}}}')
+    out.append(f'<g class="mg">{sprite(MAG, {"#": "#1B1F3A"}, cols[2] + 72, top - 14, 5)}</g>')
+    css.append(f'.mg{{animation:mg {T}s steps(1) infinite}}@keyframes mg{{0%{{transform:translateY(0)}}{steps}90%,100%{{opacity:0;transform:translateY({trap * rh}px)}}}}')
+    # the panel's verdict
+    sx, sy = px + 70, top + (trap + 1) * rh - 4
+    stamp = path(frame(sx, sy, 236, 56, 4), RED) + path(frame(sx + 8, sy + 8, 220, 40, 4), CREAM) + text('TRAP FOUND', sx + 118, sy + 21, 2, RED, 'middle')
+    out.append(f'<g class="stp">{stamp}</g>')
+    css.append(appear_css('stp', T, t_hit + 0.7, T * 0.9, 'scale(1.8)').replace('.stp{', '.stp{transform-box:fill-box;transform-origin:50% 50%;'))
+    return ''.join(out), ''.join(css)
+
+
 def tile(name, tagline, accent, scene, badge=None, corner=('A', 'S'), cta=None):
     body, css = scene()
     W, H = TW, TH
@@ -508,6 +566,10 @@ def shade(hexcol, k=.5):
 # Add a project here and re-run: its tile, its place in the grid, its corner card (A, K, Q... in order)
 # and its bar are all generated, and so is README.md. Bar: demo= gives PLAY DEMO, video= gives WATCH DEMO, neither gives a dim bar.
 PROJECTS = [
+    dict(slug='labrotation', name='LAB ROTATION', tagline='A FLIGHT SIMULATOR FOR DATA ANALYSTS', accent='#9B6CF2', scene=scene_labrotation,
+         badge=('1ST BRUIN TRACK * 2ND OVERALL', 'gold'), repo='https://github.com/NivedN08/lab-rotation',
+         demo='https://lab-rotation.vercel.app',
+         alt='Lab Rotation: a flight simulator for data analysts. 1st place Bruin track and 2nd place overall, Multiplayer AI Hackathon.'),
     dict(slug='afterhours', name='AFTERHOURS', tagline='A NIGHT CREW OF BOTS FOR SMALL SHOPS', accent='#FF3BD4', scene=scene_afterhours,
          badge=('1ST BEST DESIGN * TOP 4', 'gold'), repo='https://github.com/nick-devvv/afterhours',
          demo='https://afterhours-picky9.vercel.app/?demo',
@@ -538,6 +600,8 @@ AWARDS = [
     # place number, title, event, project line, accent, metal
     ('1', '1ST PLACE', 'CLAWMAX.AI BUILD NIGHT * SF', 'PLUMB', '#F2AE7E', 'gold'),
     ('1', '1ST PLACE', 'BEST DESIGN * GROK BOT HACKATHON', 'AFTERHOURS * TOP 4 FINALIST', '#FF3BD4', 'gold'),
+    ('1', '1ST PLACE', 'BRUIN TRACK * MULTIPLAYER AI * SF', 'LAB ROTATION', '#9B6CF2', 'gold'),
+    ('2', '2ND PLACE', 'OVERALL * MULTIPLAYER AI * SF', 'LAB ROTATION', '#9B6CF2', 'silver'),
     ('1', '1ST PLACE', 'ADOBE TRACK * DREXATHON 2026', 'BONEIFY', '#A8D672', 'gold'),
     ('2', '2ND PLACE', 'OVERALL * DREXATHON 2026', 'BONEIFY', '#A8D672', 'silver'),
     ('2', '2ND PLACE', 'HACK WITH CLAUDE * UC BERKELEY', 'PICKY', '#FF5C8A', 'silver'),
